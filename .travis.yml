@@ -53,7 +53,7 @@ matrix:
       os: linux
       compiler: gcc
 ## clang tests class and TOPP tests: without gui and with address sanitizer (needs debug build)
-    - env: ENABLE_STYLE_TESTING=OFF WITH_GUI=OFF ENABLE_TOPP_TESTING=ON ENABLE_CLASS_TESTING=ON DISABLE_WAVELET2DTEST=ON ADDRESS_SANITIZER=On BUILD_TYPE=Debug
+    - env: ENABLE_STYLE_TESTING=OFF WITH_GUI=OFF ENABLE_TOPP_TESTING=ON ENABLE_CLASS_TESTING=ON DISABLE_WAVELET2DTEST=ON ADDRESS_SANITIZER=Off BUILD_TYPE=Debug
       os: linux
       compiler: clang
 ## clang tests class and TOPP tests: without gui and without address sanitizer
