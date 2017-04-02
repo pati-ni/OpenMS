@@ -361,6 +361,7 @@ set(chemistry_executables_list
   FastaIteratorIntern_test
   FastaIterator_test
   IsotopeDistribution_test
+  IsotopeDistributionMIDAS_test
   ModificationDefinition_test
   ModificationDefinitionsSet_test
   ModificationsDB_test
