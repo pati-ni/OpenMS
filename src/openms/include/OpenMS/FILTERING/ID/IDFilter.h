@@ -38,6 +38,7 @@
 #include <OpenMS/config.h>
 #include <OpenMS/CHEMISTRY/EnzymaticDigestion.h>
 #include <OpenMS/METADATA/PeptideIdentification.h>
+#include <OpenMS/METADATA/PeptideEvidence.h>
 #include <OpenMS/METADATA/ProteinIdentification.h>
 #include <OpenMS/KERNEL/StandardTypes.h>
 #include <OpenMS/KERNEL/MSExperiment.h>
@@ -341,13 +342,13 @@ public:
       EnzymaticDigestion digestion_;
       bool ignore_missed_cleavages_;
       DigestionFilter(std::vector<FASTAFile::FASTAEntry>& entries,
-                      EnzymaticDigestion& digestion, bool ignore_missed_cleavages)
+                      EnzymaticDigestion& digestion, bool ignore_missed_cleavages) : 
+      accession_resolver_(entries)
       {
-        //accession_resolver_(entries);
         ignore_missed_cleavages_ = ignore_missed_cleavages;
         digestion_ = digestion;
       }
-
+ 
       bool operator()(const PeptideEvidence& evidence)
       {
         // TODO(Nikos) take into consideration methionine_cleavage parameter (default false)
@@ -377,6 +378,10 @@ public:
           }
           return true;
         }
+      }
+      void peptidesFilter(std::vector<PeptideIdentification>& peptides)
+      {
+        IDFilter::FilterPeptideEvidences<IDFilter::DigestionFilter>(*this,peptides);
       }
 
     };
@@ -992,14 +997,33 @@ public:
     }
 
     ///@}
+    template<class Filter>
+    static void FilterPeptideEvidences(
+        Filter& filter,
+        std::vector<PeptideIdentification>& peptides)
+      {
+        for(std::vector<PeptideIdentification>::iterator pep_it = peptides.begin();
+            pep_it != peptides.end(); ++pep_it)
+        {
+          for(std::vector<PeptideHit>::iterator hit_it = pep_it->getHits().begin();
+              hit_it != pep_it->getHits().end(); ++hit_it )
+          {
+            std::vector<PeptideEvidence> evidences;
+            remove_copy_if(hit_it->getPeptideEvidences().begin(),
+                           hit_it->getPeptideEvidences().end(),
+                           back_inserter(evidences), 
+                           [](const PeptideEvidence& p){
+                             return !filter(p);
+                           });
+            hit_it->setPeptideEvidences(evidences);
+          }
+        }
+
+      }
+
 
   };
-  template<class Filter>
-  struct FilterPeptideEvidences{
-  void operator()(
-      Filter& filter,
-      std::vector<PeptideIdentification>& peptides);
-  };
+
 } // namespace OpenMS
 
 #endif // OPENMS_FILTERING_ID_IDFILTER_H
