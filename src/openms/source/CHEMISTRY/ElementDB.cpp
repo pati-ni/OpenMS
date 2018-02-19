@@ -86,7 +86,7 @@ namespace OpenMS
         return symbols_[name];
       }
     }
-    return 0;
+    return nullptr;
   }
 
   const Element* ElementDB::getElement(UInt atomic_number) const
@@ -95,7 +95,7 @@ namespace OpenMS
     {
       return atomic_numbers_[atomic_number];
     }
-    return 0;
+    return nullptr;
   }
 
   bool ElementDB::hasElement(const String& name) const
@@ -198,7 +198,7 @@ namespace OpenMS
         atomic_numbers_[an] = e;
 
         // add all the individual isotopes as separate elements
-        for (const auto& isotope : isotopes)
+        for (auto const & isotope : isotopes)
         {
           double atomic_mass = isotope.getMZ();
           UInt mass_number = round(atomic_mass);
@@ -308,9 +308,6 @@ namespace OpenMS
     IsotopeDistribution iso_dist;
     iso_dist.set(dist);
     
-    //Safe to remove?
-    //iso_dist.setMaxIsotope(100);
-
     return iso_dist;
   }
 
